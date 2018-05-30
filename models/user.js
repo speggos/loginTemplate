@@ -18,11 +18,31 @@ let userSchema = mongoose.Schema({
 let User = module.exports = mongoose.model('User', userSchema);
 
 
-module.exports.getUsers = (user, callback) => {
+module.exports.getUsers = (callback) => {
     User.find(callback)
 };
 
+module.exports.getUserById = (id, callback) => {
+    User.findById(id, callback);
+};
+
+module.exports.getUserByEmailOrUsername = (identifier, callback) => {
+
+}
+
 module.exports.addUser = (user, callback) => {
-    console.log('user', user)
-    User.create(user, callback)
+    User.create(user, callback);
+
+    User.find(user);
+};
+
+module.exports.deleteUser = (id, callback) => {
+    User.findById(id).remove(callback)
+};
+
+module.exports.updateUser = (id, updatedFields, callback) => {
+
+    const query = {_id: id};
+
+    User.findOneAndUpdate(query, updatedFields, callback)
 };
