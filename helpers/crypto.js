@@ -1,13 +1,13 @@
-import bcrypt from 'bcryptjs';
+//import bcrypt from 'bcryptjs'; For improved security;
+import passwordHash from 'password-hash';
+
 
 // Returns a string in format: salt hash
 export function hashPassword(password) {
 
-    const salt = bcrypt.genSaltSync(16);
-
-    return bcrypt.hashSync(password, salt);
+    return passwordHash.generate(password);
 }
 
 export function checkPassword(password, hash) {
-    return bcrypt.compareSync(password, hash);
+    return passwordHash.verify(password, hash);
 }

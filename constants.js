@@ -1,0 +1,1 @@
+export const db_address = 'mongodb+srv://speggos:foobarfoo@mongo-me1rl.mongodb.net/test';
