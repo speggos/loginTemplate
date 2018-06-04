@@ -2,12 +2,13 @@ import {checkPassword, hashPassword} from "../helpers/crypto";
 import mongoose from "mongoose";
 import User from "../models/user";
 import express from 'express';
+import jwt from 'jsonwebtoken';
+import constants from '../constants';
 
 const userRoutes = express.Router();
 
 // Get all users
 userRoutes.get('/', (req, res) => {
-    console.log('here');
     User.find()
         .select("_id username email")
         .exec()
@@ -38,7 +39,6 @@ userRoutes.get('/:id', (req, res, next) => {
 });
 
 // Add User
-// TODO make username exists/password exists clearer
 userRoutes.post('/', (req, res) => {
 
     //Check for email collision
@@ -115,17 +115,30 @@ userRoutes.patch('/:id', (req, res) => {
         })
 });
 
-userRoutes.post('/login', (req, res) => {
+userRoutes.post('/login', (req, res, next) => {
 
-    const userPassword = User.getUserByEmailOrUsername(req.body.username, req.body.email, (err, result) => {
-        if (err) {
-            return console.log('heres err', err.message);
-        }
-
-        console.log('result is', result);
+    User.find({email: req.body.email}).exec().then(user => {
+        console.log('jhere');
     });
 
-    const validUser = checkPassword(req.password, userPassword);
+    User.find({email: req.body.email}).exec()
+        .then(users => {
+            console.log('usrs',users);
+            users.map(user => {
+                if (checkPassword(req.body.password, user.password)) {
+                    const token = jwt.sign({_id: user._id}, constants.jwt_passphrase);
+                    return res.status(200).json({message: "Success", token : token})
+                }
+            });
+
+            return res.status(401).json({message: "Could not log in with the provided credentials"})
+        })
+        .catch(err => {
+            console.log('heresss');
+            return res.status(401).json({error: err.message, message: "Could not log in with the provided credentials"})
+        });
+
+
 });
 
 module.exports = userRoutes;

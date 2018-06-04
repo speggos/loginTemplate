@@ -1,12 +1,14 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
+import constants from './constants';
 
 const app = express();
 
 const userRoutes = require('./routes/user');
 
-mongoose.connect('mongodb+srv://speggos:foobarfoo@mongo-me1rl.mongodb.net/test');
+mongoose.connect(constants.db_address);
+
 
 let db = mongoose.connection;
 
